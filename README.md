@@ -4,17 +4,20 @@
 理论上所有使用IT8613 IO芯片的都能这么使用，如果有在其他机型上测试通过，可以提交PR修改这里
 ```
 畅网N5105 第一版
+绿联DX4600 DX4600+
 ```
 
-## 依赖
-因为我本机构建过内核，不确定需要哪些依赖，理论上只需要`build-essential`，如果还是缺少依赖，那就执行
-```
-apt-get install git fakeroot build-essential ncurses-dev xz-utils libssl-dev bc flex libelf-dev bison
-```
+## 安装依赖
 
-安装Headers（适用于Pve，其他发行版本安装`linux-headers-$(uname -r)`)
+### Debian & Ubuntu
+```bash
+apt-get install build-essential git dkms linux-headers-$(uname -r)
 ```
-apt install pve-headers-$(uname -r)
+对于PVE，需要将`linux-headers-$(uname -r)`替换为`pve-headers-$(uname -r)`
+
+### Fedora
+```bash
+dnf install git dkms make gcc kernel-devel kernel-headers
 ```
 
 ## 编译&安装
@@ -23,6 +26,16 @@ make
 make install
 modprobe it87_wdt
 ```
+
+或者也可以使用DKMS来进行安装和管理，方便维护和更新，每次内核或内核头文件更新时，都会重新编译DKMS管理的模块。
+
+```bash
+make
+make dkms
+# 卸载模块
+make dkms_clean
+```
+安装后可以通过`dkms status`来查看已经安装的模块。
 
 ## 检查
 查看是否多了一个watchdog
